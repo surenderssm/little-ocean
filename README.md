@@ -7,8 +7,6 @@ monitoring.
 [Play the live preview](https://littleocean-3b5a7dee.app.westus2.builderapps.dev/)
 | [Deployment guide](DEPLOYMENT.md)
 
-> App Service Builder is in preview and intended for development/test workloads.
-
 ## How it's built
 
 ### From GitHub to Azure
