@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>How it's built - little ocean</title>
+  <script>
+    (() => {
+      const param = new URLSearchParams(window.location.search).get("scoutTheme");
+      const theme =
+        param || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      document.documentElement.setAttribute("data-theme", theme);
+    })();
+  </script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app build-page">
+    <nav class="build-nav" aria-label="Page navigation">
+      <a class="how-built-link" href="index.html"><span aria-hidden="true">&#8592;</span> Back to game</a>
+    </nav>
+    <header class="build-hero">
+      <span class="eyebrow">THE BUILD</span>
+      <h1>How little ocean works</h1>
+    </header>
+    <section class="architecture" aria-label="Game and platform">
+      <article class="architecture-node">
+        <h2>On your screen</h2>
+        <h3>little ocean</h3>
+        <p>A browser game made with HTML, CSS and JavaScript, with original Canvas artwork and touch-friendly controls.</p>
+      </article>
+      <article class="architecture-node">
+        <h2>Platform</h2>
+        <h3 class="platform-brand"><img src="assets/app-service-builder.svg" width="22" height="22" alt=""><a class="platform-repo" href="https://builder.appservice.azure.com/" target="_blank" rel="noopener noreferrer">Azure App Service Builder</a></h3>
+        <p>The code is on GitHub at <a class="platform-repo" href="https://github.com/surenderssm/little-ocean" target="_blank" rel="noopener noreferrer">surenderssm/little-ocean</a>, and the repo is connected to Azure App Service Builder for hosting.</p>
+        <p>The Python app uses <strong>Azure Blob Storage</strong> for adventure stats and <strong>Application Insights</strong> for telemetry. <a class="platform-repo" href="https://builder.appservice.azure.com/docs/guides/connect-to-services/" target="_blank" rel="noopener noreferrer">Builder connections</a> can supply supported settings.</p>
+        <p>Autoscaling is configured to scale to zero when idle and scale with CPU and memory usage.</p>
+      </article>
+    </section>
+  </main>
+</body>
+</html>
