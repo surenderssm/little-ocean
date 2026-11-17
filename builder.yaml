@@ -1,0 +1,12 @@
+name: little-ocean
+components:
+  - name: ocean
+    role: web
+    platform: python
+    platformVersion: "3.13"
+    path: /
+    run:
+      port: 8080
+      start: gunicorn --bind 0.0.0.0:8080 --workers 2 --threads 4 --timeout 45 server.app:application
+      healthCheckPath: /api/health
+      healthCheckStatusCodes: [200]

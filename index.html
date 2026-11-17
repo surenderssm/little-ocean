@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f7f4ef">
+  <title>Blue's Adventure | little ocean</title>
+  <script>
+    (() => {
+      const param = new URLSearchParams(window.location.search).get("scoutTheme");
+      const theme =
+        param || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      document.documentElement.setAttribute("data-theme", theme);
+    })();
+  </script>
+  <link rel="stylesheet" href="styles.css">
+  <script src="stats.js" defer></script>
+  <script src="game.js" defer></script>
+</head>
+<body>
+  <svg class="icon-library" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="i-wave" viewBox="0 0 32 32"><path d="M3 19c4-8 9-8 13-1s9 7 13-1M3 26c4-8 9-8 13-1s9 7 13-1" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><circle cx="23" cy="7" r="3" fill="currentColor"/></symbol>
+    <symbol id="i-sound" viewBox="0 0 24 24"><path d="m11 5-6 4H2v6h3l6 4zM15 8c3 2 3 6 0 8m3-11c5 4 5 10 0 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-muted" viewBox="0 0 24 24"><path d="m11 5-6 4H2v6h3l6 4zM16 9l6 6m0-6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></symbol>
+    <symbol id="i-restart" viewBox="0 0 24 24"><path d="M5 8a8 8 0 1 1-1 7M5 3v6h6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 2 3 6.5 7 .9-5.2 5 1.4 7.1L12 18l-6.2 3.5L7.2 14 2 9.4l7-.9z" fill="currentColor"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 21S1 14 1 7.5C1 1 9 0 12 6c3-6 11-5 11 1.5C23 14 12 21 12 21" fill="currentColor"/></symbol>
+  </svg>
+  <main class="app game-app">
+    <header class="topbar">
+      <div class="brand"><span class="brand-icon"><svg><use href="#i-wave"/></svg></span><span>little ocean<span class="brand-sub">BIG LITTLE ADVENTURES</span></span></div>
+      <button id="sound" class="icon-button" aria-label="Mute sound" title="Mute sound" aria-pressed="true"><svg><use href="#i-sound"/></svg></button>
+    </header>
+
+    <section class="game-frame" aria-label="Blue's Adventure">
+      <div class="stage" id="stage">
+        <canvas id="ocean" tabindex="0" role="img" aria-label="An underwater world. Use arrow keys or WASD to swim, Space to make a bubble burst, and Escape to pause."></canvas>
+
+        <section class="welcome" id="welcome" aria-labelledby="welcome-title">
+          <h1 id="welcome-title">Blue's<br><span>Adventure</span><i class="title-spark" aria-hidden="true">&#10022;</i></h1>
+          <p>Swim, sparkle, explore.</p>
+          <button id="play" class="primary-button">Let's dive in <svg><use href="#i-arrow"/></svg></button>
+        </section>
+        <div class="blue-name" id="blue-name" aria-hidden="true"><span>Hey, I'm Blue!</span><svg viewBox="0 0 42 27"><path d="M6 3Q4 19 29 20m0 0-5-5m5 5-6 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+
+        <div class="hud" id="hud" hidden>
+          <div class="hud-left">
+            <div class="score-pill"><svg><use href="#i-star"/></svg><strong id="score">0</strong><span>points</span></div>
+            <div class="hearts" id="hearts" aria-label="5 out of 5 hearts"></div>
+          </div>
+          <div class="quest-pill"><span id="level-name">Sunbeam Reef</span><strong id="collection">0 / 12 treasures</strong><div class="progress-track"><span id="quest-progress"></span></div></div>
+          <div class="hud-actions"><button id="restart" class="icon-button" aria-label="Restart adventure" title="Restart adventure"><svg><use href="#i-restart"/></svg></button><button id="pause" class="icon-button" aria-label="Pause game" title="Pause (Esc)"><svg><use href="#i-pause"/></svg></button></div>
+        </div>
+
+        <div class="game-tip" id="game-tip" hidden>Collect 12 treasures, then find the rainbow arch!</div>
+        <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+        <div class="play-controls" id="play-controls" hidden>
+          <div class="dpad" aria-label="Swim controls">
+            <button data-direction="up" class="direction up" aria-label="Swim up">&#8593;</button>
+            <button data-direction="left" class="direction left" aria-label="Swim left">&#8592;</button>
+            <span class="dpad-center" aria-hidden="true">&#183;</span>
+            <button data-direction="right" class="direction right" aria-label="Swim right">&#8594;</button>
+            <button data-direction="down" class="direction down" aria-label="Swim down">&#8595;</button>
+          </div>
+          <div class="burst-wrap"><button id="burst" class="burst-button" aria-label="Bubble burst"><span aria-hidden="true">&#10022;</span><span id="burst-label">Bubble burst</span><kbd>SPACE</kbd></button><span class="burst-caption">A little boost of magic</span></div>
+        </div>
+
+        <div id="modal" class="modal-backdrop" hidden>
+          <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-copy">
+            <div class="modal-emblem" id="modal-emblem" aria-hidden="true">&#10022;</div>
+            <div class="eyebrow" id="modal-eyebrow">TAKE A BREATHER</div>
+            <h2 id="modal-title">Just floating.</h2>
+            <p id="modal-copy">Your ocean friends will wait right here.</p>
+            <div class="reward-row" id="reward-row" hidden></div>
+            <button id="modal-primary" class="primary-button">Keep swimming <svg><use href="#i-arrow"/></svg></button>
+            <button id="modal-secondary" class="text-button">Start a new adventure</button>
+          </section>
+        </div>
+      </div>
+
+      <div class="adventure-strip" id="adventure-strip">
+        <div class="strip-heading"><span class="eyebrow">YOUR LITTLE JOURNEY</span><strong>Wonder around every corner.</strong></div>
+        <div class="reef-stop active" data-reef="0"><span class="reef-icon sun" aria-hidden="true">&#9728;</span><span><small>REEF 01</small><strong>Sunbeam Reef</strong></span></div>
+        <span class="journey-dots" aria-hidden="true">&#183; &#183; &#183;</span>
+        <div class="reef-stop" data-reef="1"><span class="reef-icon garden" aria-hidden="true">&#10047;</span><span><small>REEF 02</small><strong>Coral Gardens</strong></span></div>
+        <span class="journey-dots" aria-hidden="true">&#183; &#183; &#183;</span>
+        <div class="reef-stop" data-reef="2"><span class="reef-icon moon" aria-hidden="true">&#9789;</span><span><small>REEF 03</small><strong>Starlight Cove</strong></span></div>
+      </div>
+    </section>
+
+    <footer class="ocean-footer">
+      <div class="footer">
+        <div class="control-hint"><span class="keyboard-hint"><kbd>&#8592;</kbd><kbd>&#8593;</kbd><kbd>&#8595;</kbd><kbd>&#8594;</kbd> Swim <span class="hint-divider"></span><kbd>SPACE</kbd> Bubble burst</span><span class="touch-hint">Drag to swim, or use the arrow buttons</span></div>
+        <span class="safe-note"><span aria-hidden="true">&#9825;</span> A happy place to play. No ads. Just adventure.</span>
+      </div>
+      <div class="ocean-footer-bottom">
+        <section class="ocean-community" aria-label="Ocean community statistics" title="Anonymous adventures, not unique people. No sign-in or tracking cookies.">
+          <div class="community-stat"><strong id="stats-playing">&mdash;</strong><span>Playing now</span></div>
+          <div class="community-stat"><strong id="stats-adventures">&mdash;</strong><span>Adventures started</span></div>
+          <span class="sr-only">Anonymous adventures, not unique people. No sign-in or tracking cookies.</span>
+        </section>
+        <div class="builder-footer">
+          <a class="builder-credit" href="https://builder.appservice.azure.com/docs/" target="_blank" rel="noopener noreferrer"><span>Hosted in</span><img src="assets/app-service-builder.svg" width="22" height="22" alt=""><strong>Azure App Service Builder</strong><span aria-hidden="true">&#8599;</span></a>
+          <a class="how-built-link" href="how-its-built.html">How it's built <span aria-hidden="true">&#8594;</span></a>
+        </div>
+      </div>
+    </footer>
+    <p class="sr-only" id="announcement" aria-live="polite"></p>
+    <noscript>This ocean needs JavaScript to swim. Please enable JavaScript in your browser and open this page again.</noscript>
+  </main>
+</body>
+</html>
